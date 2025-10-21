@@ -176,7 +176,7 @@ def runMF(dlc_dir=os.getcwd(),
           na_limit=0.25,
           faceregions_sizes=None,
           base_resolution=None,
-          manual_anchor=None         # allow user-supplied anchor pts
+          manual_anchor=None         
     ):
     # dir defines directory to detect face/body videos, standard: current working directory
     # facekey defines unique string that is contained in all face videos. If none, no face videos will be considered.
@@ -210,12 +210,12 @@ def runMF(dlc_dir=os.getcwd(),
 
     #  FACE ANALYSIS
     for faceDLC in facefiles:
+        mf_file = faceDLC[:-3] + '_mouseflow.h5'
         if os.path.exists(mf_file) and not overwrite:
             print(mf_file + ' data already analysed. Skipping ahead...')
             continue
 
         print('Processing DLC data from '+faceDLC)
-        mf_file = faceDLC[:-3] + '_mouseflow.h5'
         facefile = glob.glob(os.path.join(os.path.dirname(
             dlc_dir), os.path.basename(faceDLC).split('DLC')[0] + '*'))[0]
         facevidcap = cv2.VideoCapture(facefile)
@@ -229,7 +229,7 @@ def runMF(dlc_dir=os.getcwd(),
         markers_face_conf = confidence_na(dgp, conf_thresh, markers_face)
 
         # Interpolating missing data up to <na_limits>
-        interpolation_limits_frames = {x: max(1, max(int(k * FaceCam_FPS)))
+        interpolation_limits_frames = {x: max(1, int(k * FaceCam_FPS))
                                        for (x, k) in interpolation_limits_sec.items()}
         markers_face_conf.loc[:, ['pupil'+str(n+1) for n in range(6)]] = \
             markers_face_conf.loc[:, ['pupil'+str(n+1) for n in range(6)]].interpolate(
